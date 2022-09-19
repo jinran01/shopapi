@@ -19,7 +19,6 @@ class AddressController extends BaseController
     public function index()
     {
         //
-
         $address = Address::where('user_id',auth('api')->id())->get();
         return $this->response->collection($address,new AddressTransformer());
 
@@ -30,7 +29,6 @@ class AddressController extends BaseController
      */
     public function store(AddressRequest $request)
     {
-
         $request->offsetSet('user_id',auth('api')->id());
         Address::create($request->all());
         return $this->response->created();
@@ -41,7 +39,6 @@ class AddressController extends BaseController
      */
     public function show(Address $address)
     {
-
         return $this->response->item($address,new AddressTransformer());
     }
 
@@ -50,10 +47,8 @@ class AddressController extends BaseController
      */
     public function update(AddressRequest $request,Address $address)
     {
-
         $address->update($request->all());
         return $this->response->noContent();
-
     }
 
     /**
@@ -71,26 +66,22 @@ class AddressController extends BaseController
     public function default(Address $address)
     {
         if ($address->is_default == 1){
-            return $this->response->errorBadRequest('该地址已经是默认地址');
+//            return $this->response->errorBadRequest('该地址已经是默认地址');
+            return $this->response->noContent();
         }
-
         try {
             DB::beginTransaction();
             //先把所有的地址都设置为非默认
             $default_address = Address::where('user_id',auth('api')->id())
                 ->where('is_default',1)
                 ->first();
-
             if (!empty($default_address)){
-
                 $default_address->is_default = 0;
                 $default_address->save();
-
             }
             //再把当前设置为默认
             $address->is_default = 1;
             $address->save();
-
             DB::commit();
             return $this->response->noContent();
         }catch (\Exception $e){

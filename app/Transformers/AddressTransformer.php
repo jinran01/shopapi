@@ -15,6 +15,7 @@ class AddressTransformer extends TransformerAbstract
             'city_name' => city_name($address->city_id),
             'address' => $address->address,
             'phone' => $address->phone,
+            'is_default' =>$address->is_default,
             'created_at' => $address->created_at,
             'updated_at' => $address->updated_at,
         ];

@@ -9,5 +9,5 @@ class Address extends Model
 {
     use HasFactory;
     //不可批量赋值
-    protected $guarded = ['county'];
+    protected $guarded = ['county','is_default'];
 }
