@@ -29,7 +29,7 @@ class PayController extends BaseController
         if ($request->input('type') =='aliyun'){
             $order = [
                 'out_trade_no' => $order->order_no,
-                'total_amount' => $order->amount / 100,
+                'total_amount' => $order->amount,
                 'subject' => $order->goods()->first()->title.'等'.$order->goods()->count().'件商品'
             ];
 //            return $order;

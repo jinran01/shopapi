@@ -31,7 +31,6 @@ class BindController extends BaseController
 //        Mail::to($request->input('email'))->send(new SendCode($request->input('email')));
 //        Mail::to($request->input('email'))->queue(new SendCode($request->input('email')));
         Mail::to($user->email)->send(new SendCode($user->email));
-
         return $this->response->noContent();
     }
 

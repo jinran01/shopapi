@@ -35,6 +35,8 @@ $api->version('v1',['middleware' => 'api.throttle', 'limit' => 20, 'expires' => 
             $api->post('phone/code',[\App\Http\Controllers\Auth\BindController::class,'phoneCode']);
             //更换手机号
             $api->patch('phone/update',[\App\Http\Controllers\Auth\BindController::class,'updatePhone']);
+            //更换头像
+            $api->patch('avatar/update',[\App\Http\Controllers\Auth\ResetAvatarController::class,'updateAvatar']);
         });
     });
 });

@@ -8,6 +8,7 @@ use App\Models\Address;
 use App\Models\Cart;
 use App\Models\Good;
 use App\Models\Order;
+use App\Transformers\AddressTransformer;
 use App\Transformers\OrderTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -42,10 +43,14 @@ class OrderController extends BaseController
         $address = Address::where('user_id',auth('api')->id())
             ->orderBy('is_default','desc')
             ->get();
+        foreach ($address as $a){
+            $a['city_name'] = city_name($a->city_id);
+        }
+
         //购物车数据信息
         $carts = Cart::where('user_id',auth('api')->id())
             ->where('is_checked',1)
-            ->with('goods:id,cover,title,description')
+            ->with('goods:id,cover,title,description,price')
             ->get();
 
         //判断购物车是否有选择商品
@@ -114,7 +119,8 @@ class OrderController extends BaseController
                    ->decrement('stock',$cart->num);
            }
            DB::commit();
-           return $this->response->created();
+//           return $this->response->created();
+           return $order;
        }catch (\Exception $e){
             //数据库回滚
             DB::rollBack();
@@ -133,8 +139,7 @@ class OrderController extends BaseController
      */
     public function express(Order $order){
         if (!in_array($order->status,[3,4])){
-
-            return $this->response->errorBadRequest('订单状态异常');
+            return $this->response->noContent();
         }
 
 //        $express =new Express();
@@ -158,15 +163,12 @@ class OrderController extends BaseController
             DB::beginTransaction();
             $order->status = 4;
             $order->save();
-
             $orderDetails = $order->orderDetails;
-
             //增加订单下的所有商品的销量
             foreach ($orderDetails as $orderDetail){
                 //更新商品销量
                 Good::where('id',$orderDetail->goods_id)->increment('sales',$orderDetail->num);
             }
-
             DB::commit();
         }catch (\Exception $e){
             DB::rollBack();
